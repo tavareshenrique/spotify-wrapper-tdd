@@ -1,4 +1,6 @@
-export const search = () => {};
+export const search = () => {
+  fetch('https://spotify.com');
+};
 
 export const searchAlbums = () => {};
 
