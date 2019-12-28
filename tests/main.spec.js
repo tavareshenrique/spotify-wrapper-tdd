@@ -18,7 +18,7 @@ sinonStubPromise(sinon);
 global.fetch = require('node-fetch');
 
 describe('Spotify Wrapper', () => {
-  describe('smoke tests', () => {
+  describe('Smoke Tests', () => {
     it('should exists the search method', () => {
       expect(search).to.exist;
     });
@@ -41,27 +41,40 @@ describe('Spotify Wrapper', () => {
   });
 
   describe('Generic Search', () => {
-    it('should call fetch function', () => {
-      const fetchedStub = sinon.stub(global, 'fetch');
-      const artists = search();
+    let fetchedStub;
 
-      expect(fetchedStub).to.have.been.calledOnce;
+    beforeEach(() => {
+      fetchedStub = sinon.stub(global, 'fetch');
+    });
 
+    afterEach(() => {
       fetchedStub.restore();
     });
 
-    it('should receive the currect url to fetch', () => {
-      const fetchedStub = sinon.stub(global, 'fetch');
-      const artists = search('Marshmello', 'artist');
+    it('should call fetch function', () => {
+      const artists = search();
+      expect(fetchedStub).to.have.been.calledOnce;
+    });
 
-      expect(fetchedStub).to.have.been.calledWith(
-        'https://api.spotify.com/v1/search?q=Marshmello&type=artist'
-      );
+    it('should call fetch with the currect URL', () => {
+      context('passing one type', () => {
+        const artists = search('Marshmello', 'artist');
+        expect(fetchedStub).to.have.been.calledWith(
+          'https://api.spotify.com/v1/search?q=Marshmello&type=artist'
+        );
 
-      const albuns = search('Marshmello', 'album');
-      expect(fetchedStub).to.have.been.calledWith(
-        'https://api.spotify.com/v1/search?q=Marshmello&type=album'
-      );
+        const albums = search('Marshmello', 'album');
+        expect(fetchedStub).to.have.been.calledWith(
+          'https://api.spotify.com/v1/search?q=Marshmello&type=album'
+        );
+      });
+
+      context('passing more than one type', () => {
+        const artistsAndAlbums = search('Marshmello', ['artist', 'album']);
+        expect(fetchedStub).to.have.been.calledWith(
+          'https://api.spotify.com/v1/search?q=Marshmello&type=artist,album'
+        );
+      });
     });
   });
 });
