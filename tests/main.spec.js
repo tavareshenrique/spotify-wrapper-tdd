@@ -46,6 +46,22 @@ describe('Spotify Wrapper', () => {
       const artists = search();
 
       expect(fetchedStub).to.have.been.calledOnce;
+
+      fetchedStub.restore();
+    });
+
+    it('should receive the currect url to fetch', () => {
+      const fetchedStub = sinon.stub(global, 'fetch');
+      const artists = search('Marshmello', 'artist');
+
+      expect(fetchedStub).to.have.been.calledWith(
+        'https://api.spotify.com/v1/search?q=Marshmello&type=artist'
+      );
+
+      const albuns = search('Marshmello', 'album');
+      expect(fetchedStub).to.have.been.calledWith(
+        'https://api.spotify.com/v1/search?q=Marshmello&type=album'
+      );
     });
   });
 });
